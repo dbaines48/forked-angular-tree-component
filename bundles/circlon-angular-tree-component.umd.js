@@ -1921,7 +1921,8 @@
         };
         TreeVirtualScroll.prototype._getPositionAfterNode = function (node, startPos) {
             var position = node.getSelfHeight() + startPos;
-            if (node.children && node.isExpanded) { // TBD: consider loading component as well
+            if (node.children && node.isExpanded) {
+                // TBD: consider loading component as well
                 position = this._getPositionAfter(node.visibleChildren, position);
             }
             node.height = position - startPos;
@@ -1931,36 +1932,42 @@
             this._dispose.forEach(function (d) { return d(); });
         };
         TreeVirtualScroll.prototype.setViewport = function (viewport) {
-            Object.assign(this, {
-                viewport: viewport,
-                x: viewport.scrollLeft,
-                yBlocks: Math.round(viewport.scrollTop / Y_EPSILON),
-                viewportHeight: viewport.getBoundingClientRect ? viewport.getBoundingClientRect().height : 0
-            });
+            this.viewport = viewport;
+            this.x = viewport.scrollLeft;
+            this.yBlocks = Math.round(viewport.scrollTop / Y_EPSILON);
+            this.viewportHeight = viewport.getBoundingClientRect
+                ? viewport.getBoundingClientRect().height
+                : 0;
         };
         TreeVirtualScroll.prototype.scrollIntoView = function (node, force, scrollToMiddle) {
             if (scrollToMiddle === void 0) { scrollToMiddle = true; }
             if (node.options.scrollContainer) {
                 var scrollContainer = node.options.scrollContainer;
-                var scrollContainerHeight = scrollContainer.getBoundingClientRect().height;
+                var scrollContainerHeight = scrollContainer.getBoundingClientRect()
+                    .height;
                 var scrollContainerTop = scrollContainer.getBoundingClientRect().top;
-                var nodeTop = this.viewport.getBoundingClientRect().top + node.position - scrollContainerTop;
+                var nodeTop = this.viewport.getBoundingClientRect().top +
+                    node.position -
+                    scrollContainerTop;
                 if (force || // force scroll to node
                     nodeTop < scrollContainer.scrollTop || // node is above scroll container
-                    nodeTop + node.getSelfHeight() > scrollContainer.scrollTop + scrollContainerHeight) { // node is below container
-                    scrollContainer.scrollTop = scrollToMiddle ?
-                        nodeTop - scrollContainerHeight / 2 : // scroll to middle
-                        nodeTop; // scroll to start
+                    nodeTop + node.getSelfHeight() >
+                        scrollContainer.scrollTop + scrollContainerHeight) {
+                    // node is below container
+                    scrollContainer.scrollTop = scrollToMiddle
+                        ? nodeTop - scrollContainerHeight / 2 // scroll to middle
+                        : nodeTop; // scroll to start
                 }
             }
             else {
                 if (force || // force scroll to node
                     node.position < this.y || // node is above viewport
-                    node.position + node.getSelfHeight() > this.y + this.viewportHeight) { // node is below viewport
+                    node.position + node.getSelfHeight() > this.y + this.viewportHeight) {
+                    // node is below viewport
                     if (this.viewport) {
-                        this.viewport.scrollTop = scrollToMiddle ?
-                            node.position - this.viewportHeight / 2 : // scroll to middle
-                            node.position; // scroll to start
+                        this.viewport.scrollTop = scrollToMiddle
+                            ? node.position - this.viewportHeight / 2 // scroll to middle
+                            : node.position; // scroll to start
                         this._setYBlocks(Math.floor(this.viewport.scrollTop / Y_EPSILON));
                     }
                 }
@@ -1986,8 +1993,8 @@
             // Look for first node that starts after the beginning of the viewport (with buffer)
             // Or that ends after the beginning of the viewport
             var firstIndex = binarySearch(visibleNodes, function (node) {
-                return (node.position + Y_OFFSET > _this.y) ||
-                    (node.position + node.height > _this.y);
+                return (node.position + Y_OFFSET > _this.y ||
+                    node.position + node.height > _this.y);
             });
             // Search for last node in the viewport using binary search
             // Look for first node that starts after the end of the viewport (with buffer)
